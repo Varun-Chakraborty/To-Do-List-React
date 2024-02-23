@@ -30,7 +30,7 @@ This is a simple ToDo list application built with React.js and Tailwind CSS.
     ```bash
     npm run dev
     ```
-2. Open your browser and visit http://localhost:5713 to view the app.
+2. Open your browser and visit http://localhost:5173 to view the app.
 
 ## How to Use
 - ### Adding a Task:
