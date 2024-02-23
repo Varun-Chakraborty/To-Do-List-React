@@ -13,7 +13,7 @@ This is a simple ToDo list application built with React.js and Tailwind CSS.
 
 1. Clone the repository:
     ```bash
-    git clone <repository-url>
+    git clone "https://github.com/Varun-Chakraborty/To-Do-List-React"
     ```
 
 2. Navigate to the project directory:
