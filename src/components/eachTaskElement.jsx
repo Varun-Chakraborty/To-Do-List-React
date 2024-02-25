@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
+
+import { tasksContext } from "../context/tasks";
 
 function deleteTask(taskToDelete, setTasks) {
     setTasks(prevValue => {
@@ -36,7 +38,8 @@ function editTask(setIfEdited, taskToEdit, setTasks) {
     });
 }
 
-export default function EachTaskElement({ isEdited, setIfEdited, currentTask, setTasks }) {
+export default function EachTaskElement({currentTask, setTasks }) {
+    const { isEdited, setIfEdited } = useContext(tasksContext);
     const [changed, setChanged] = useState(false);
     useEffect(() => {
         if (changed) {

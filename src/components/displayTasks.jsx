@@ -45,8 +45,7 @@ function ComponentToDisplayWhenNoItemInList({ showDoneTasks, setTasks }) {
     );
 }
 
-export default function DisplayTasks({ isEdited, setIfEdited, tasks, setTasks, doneTasks, showDoneTasks }) {
-    let count = 0;
+export default function DisplayTasks({ tasks, setTasks, doneTasks, showDoneTasks }) {
     let allTasks = tasks.concat(showDoneTasks ? doneTasks : []);
     return (
         <div className="bg-violet-100 p-2 rounded-xl h-3/5 flex flex-col">
@@ -141,12 +140,10 @@ export default function DisplayTasks({ isEdited, setIfEdited, tasks, setTasks, d
             <div className="bg-violet-50 rounded-lg h-full space-y-2 p-2 m-2 overflow-x-hidden overflow-y-auto">
                 {
                     allTasks.length > 0 ?
-                        allTasks.map((task) => {
+                        allTasks.map((task, index) => {
                             return (
                                 <EachTaskElement
-                                    isEdited={isEdited}
-                                    setIfEdited={setIfEdited}
-                                    key={count++}
+                                    key={index}
                                     currentTask={task}
                                     setTasks={setTasks}
                                 />

@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { tasksContext } from "../context/tasks";
 
 function addTaskHook(newTask, setTasks) {
     if (newTask) setTasks(([tasks, doneTasks]) => [[...tasks, { name: newTask, isDone: false }], doneTasks]);
 }
 
-export default function NewTask({ isEdited, setIfEdited, setTasks }) {
+export default function NewTask({ setTasks }) {
+    const { isEdited, setIfEdited } = useContext(tasksContext);
     const [value, setValue] = useState('');
     const inputField = useRef();
     useEffect(() => {
