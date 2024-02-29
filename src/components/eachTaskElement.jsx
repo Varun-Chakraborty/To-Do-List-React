@@ -1,18 +1,17 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
-
-import { tasksContext } from "../context/tasks";
+import { useEditTaskContext } from "../context/editTaskStateContext";
 
 function deleteTask(taskToDelete, setTasks) {
     setTasks(prevValue => {
         let [tasks, doneTasks] = prevValue;
         if (taskToDelete.isDone) {
             let index = doneTasks.indexOf(taskToDelete);
-            index>=0 && doneTasks.splice(index, 1)
+            index >= 0 && doneTasks.splice(index, 1)
         } else {
             let index = tasks.indexOf(taskToDelete);
-            index>=0 && tasks.splice(index, 1)
+            index >= 0 && tasks.splice(index, 1)
         }
         return [[...tasks], [...doneTasks]]
     });
@@ -26,11 +25,11 @@ function editTask(setIfEdited, taskToEdit, setTasks) {
             }
             if (taskToEdit.isDone) {
                 let index = doneTasks.indexOf(taskToEdit);
-                index>=0 && doneTasks.splice(index, 1);
+                index >= 0 && doneTasks.splice(index, 1);
             }
             else {
                 let index = tasks.indexOf(taskToEdit);
-                index>=0 && tasks.splice(index, 1);
+                index >= 0 && tasks.splice(index, 1);
             }
             return [[...tasks], [...doneTasks]]
         });
@@ -38,8 +37,8 @@ function editTask(setIfEdited, taskToEdit, setTasks) {
     });
 }
 
-export default function EachTaskElement({currentTask, setTasks }) {
-    const { isEdited, setIfEdited } = useContext(tasksContext);
+export default function EachTaskElement({ currentTask, setTasks }) {
+    const { isEdited, setIfEdited } = useEditTaskContext();
     const [changed, setChanged] = useState(false);
     useEffect(() => {
         if (changed) {

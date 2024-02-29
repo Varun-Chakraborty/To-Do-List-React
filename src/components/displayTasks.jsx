@@ -1,59 +1,19 @@
+import { useShowDoneTaskContext } from "../context/showDoneTaskContext";
+import { useTaskContext } from "../context/tasksContext";
+import NoItemComponent from "./NoItemComponent";
 import EachTaskElement from "./eachTaskElement";
 
-function generateRandomWords() {
-    const charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let word = '';
-    for (let i = 0; i < 11; i++) {
-        let index = Math.round(Math.random() * (charSet.length - 1));
-        word += i === 4 ?
-            ' ' : charSet[index];
-    }
-    return word;
-}
-
-function ComponentToDisplayWhenNoItemInList({ showDoneTasks, setTasks }) {
-    return (
-        <div className="flex flex-col lg:flex-row gap-2 lg:justify-between lg:items-center px-4 py-2">
-            <div>
-                <p>None to display yet</p>
-                <p>
-                    {showDoneTasks ? '' : '\nThere might be some in finished tasks'}
-                </p>
-            </div>
-            <button
-                type="submit"
-                className="p-2 select-none bg-violet-700 hover:bg-violet-600 border-2 border-violet-600 rounded-xl outline-none text-white uppercase w-fit"
-                onClick={
-                    evnt => {
-                        evnt.preventDefault();
-                        setTasks(prevValue => {
-                            let [tasks, doneTasks] = prevValue;
-                            if (tasks.length === 0) {
-                                for (let i = 0; i < 5; i++) {
-                                    tasks.push({ name: generateRandomWords(), isDone: false });
-                                }
-                            } if (doneTasks.length === 0) {
-                                for (let i = 0; i < 5; i++) {
-                                    doneTasks.push({ name: generateRandomWords(), isDone: true });
-                                }
-                            }
-                            return [[...tasks], [...doneTasks]]
-                        });
-                    }}
-            >generate random</button>
-        </div>
-    );
-}
-
-export default function DisplayTasks({ tasks, setTasks, doneTasks, showDoneTasks }) {
-    let allTasks = tasks.concat(showDoneTasks ? doneTasks : []);
+export default function DisplayTasks() {
+    const { showDone } = useShowDoneTaskContext();
+    const { undoneTasks, doneTasks, setTasks } = useTaskContext();
+    let allTasks = undoneTasks.concat(showDone ? doneTasks : []);
     return (
         <div className="bg-violet-100 p-2 rounded-xl h-3/5 flex flex-col">
             <div className="flex justify-between items-center">
                 <h2 className="font-bold uppercase font-serif">your tasks</h2>
                 <div className="flex gap-2">
                     {
-                        tasks.length > 0 &&
+                        undoneTasks.length > 0 &&
                         <button
                             type="submit"
                             onClick={
@@ -64,7 +24,7 @@ export default function DisplayTasks({ tasks, setTasks, doneTasks, showDoneTasks
                                         return [
                                             [],
                                             doneTasks.concat(
-                                                tasks.length > 0 ?
+                                                undoneTasks.length > 0 ?
                                                     tasks.map(
                                                         task => {
                                                             return { ...task, isDone: true }
@@ -77,14 +37,14 @@ export default function DisplayTasks({ tasks, setTasks, doneTasks, showDoneTasks
                             className={
                                 (
                                     doneTasks.length > 0 ?
-                                        (tasks.length > 0 || doneTasks.length > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500") :
-                                        (tasks.length > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500")
+                                        (undoneTasks.length > 0 || doneTasks.length > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500") :
+                                        (undoneTasks.length > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500")
                                 )
                                 + " select-none text-white outline-none p-2 rounded-lg"}>
                             MARK ALL AS DONE
                         </button>
                     }{
-                        showDoneTasks && tasks.length === 0 && doneTasks.length > 0 &&
+                        showDone && undoneTasks.length === 0 && doneTasks.length > 0 &&
                         <button
                             type="submit"
                             onClick={
@@ -107,8 +67,8 @@ export default function DisplayTasks({ tasks, setTasks, doneTasks, showDoneTasks
                             className={
                                 (
                                     doneTasks.length > 0 ?
-                                        (tasks.length > 0 || doneTasks.length > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500") :
-                                        (tasks.length > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500")
+                                        (undoneTasks.length > 0 || doneTasks.length > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500") :
+                                        (undoneTasks.length > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500")
                                 )
                                 + " select-none text-white outline-none p-2 rounded-lg"}>
                             MARK ALL AS NOT DONE
@@ -121,15 +81,15 @@ export default function DisplayTasks({ tasks, setTasks, doneTasks, showDoneTasks
                                     evnt.preventDefault();
                                     setTasks(prevValue => {
                                         let [tasks, doneTasks] = prevValue;
-                                        return [[], showDoneTasks ? [] : doneTasks]
+                                        return [[], showDone ? [] : doneTasks]
                                     });
                                 }
                             }
                             className={
                                 (
-                                    showDoneTasks ?
-                                        (tasks.length > 0 || doneTasks.length > 0 ? "bg-red-600 hover:bg-red-500" : "bg-gray-500") :
-                                        (tasks.length > 0 ? "bg-red-600 hover:bg-red-500" : "bg-gray-500")
+                                    showDone ?
+                                        (undoneTasks.length > 0 || doneTasks.length > 0 ? "bg-red-600 hover:bg-red-500" : "bg-gray-500") :
+                                        (undoneTasks.length > 0 ? "bg-red-600 hover:bg-red-500" : "bg-gray-500")
                                 )
                                 + " select-none text-white outline-none p-2 rounded-lg"}>
                             DELETE ALL
@@ -149,8 +109,7 @@ export default function DisplayTasks({ tasks, setTasks, doneTasks, showDoneTasks
                                 />
                             )
                         }) :
-                        <ComponentToDisplayWhenNoItemInList
-                            showDoneTasks={showDoneTasks} setTasks={setTasks} tasks={tasks} doneTasks={doneTasks} />
+                        <NoItemComponent />
                 }
             </div>
         </div>
