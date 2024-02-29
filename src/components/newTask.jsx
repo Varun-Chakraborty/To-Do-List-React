@@ -3,7 +3,7 @@ import { useEditTaskContext } from "../context/editTaskStateContext";
 import { useTaskContext } from "../context/tasksContext";
 
 function addTaskHook(newTask, setTasks) {
-    if (newTask) setTasks(([tasks, doneTasks]) => [[...tasks, { name: newTask, isDone: false }], doneTasks]);
+    if (newTask) setTasks(({ undoneTasks, doneTasks }) => ({ undoneTasks:[...undoneTasks, { name: newTask, isDone: false }], doneTasks }));
 }
 
 export default function NewTask({ }) {
@@ -12,8 +12,8 @@ export default function NewTask({ }) {
     const [value, setValue] = useState('');
     const inputField = useRef();
     useEffect(() => {
-        if (isEdited[0]) {
-            setValue(isEdited[1].name);
+        if (isEdited.state) {
+            setValue(isEdited.taskData.name);
             inputField.current.focus();
         }
     }, [isEdited]);
@@ -34,7 +34,7 @@ export default function NewTask({ }) {
                             if (evnt.key === 'Enter') {
                                 addTaskHook(value, setTasks);
                                 setValue('');
-                                isEdited[0] && setIfEdited([false, { name: '', isDone: false }]);
+                                isEdited.state && setIfEdited({ state: false, taskData: { name: '', isDone: false }, index: -1 });
                             }
                         }
                     }
@@ -51,11 +51,11 @@ export default function NewTask({ }) {
                             const value = evnt.currentTarget.previousElementSibling.value;
                             addTaskHook(value, setTasks);
                             setValue('');
-                            isEdited[0] && setIfEdited([false, '']);
+                            isEdited.state && setIfEdited({ state: false, taskData: '', index: -1 });
                         }
                     }
                     type="submit"
-                >{isEdited[0] ? 'update' : 'save'}</button>
+                >{isEdited.state ? 'update' : 'save'}</button>
             </div>
         </div>
     );

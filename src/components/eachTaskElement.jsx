@@ -1,58 +1,58 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import { useEditTaskContext } from "../context/editTaskStateContext";
+import { useTaskContext } from "../context/tasksContext";
 
 function deleteTask(taskToDelete, setTasks) {
-    setTasks(prevValue => {
-        let [tasks, doneTasks] = prevValue;
+    setTasks(({undoneTasks, doneTasks}) => {
         if (taskToDelete.isDone) {
             let index = doneTasks.indexOf(taskToDelete);
             index >= 0 && doneTasks.splice(index, 1)
         } else {
-            let index = tasks.indexOf(taskToDelete);
-            index >= 0 && tasks.splice(index, 1)
+            let index = undoneTasks.indexOf(taskToDelete);
+            index >= 0 && undoneTasks.splice(index, 1)
         }
-        return [[...tasks], [...doneTasks]]
+        return { undoneTasks: [...undoneTasks], doneTasks: [...doneTasks] };
     });
 }
 function editTask(setIfEdited, taskToEdit, setTasks) {
-    setIfEdited(prevState => {
-        setTasks(prevValue => {
-            let [tasks, doneTasks] = prevValue;
-            if (prevState[0]) {
-                prevState[1].isDone ? doneTasks.unshift(prevState[1]) : tasks.unshift(prevState[1]);
+    setIfEdited(({state, taskData, index}) => {
+        setTasks(({ undoneTasks, doneTasks }) => {
+            if (state) {
+                taskData.isDone ? doneTasks.splice(index, 0, taskData) : undoneTasks.splice(index, 0, taskData);
             }
             if (taskToEdit.isDone) {
-                let index = doneTasks.indexOf(taskToEdit);
+                index = doneTasks.indexOf(taskData);
                 index >= 0 && doneTasks.splice(index, 1);
             }
             else {
-                let index = tasks.indexOf(taskToEdit);
-                index >= 0 && tasks.splice(index, 1);
+                index = undoneTasks.indexOf(taskToEdit);
+                index >= 0 && undoneTasks.splice(index, 1);
             }
-            return [[...tasks], [...doneTasks]]
+            return {undoneTasks: [...undoneTasks], doneTasks: [...doneTasks]}
         });
-        return [true, taskToEdit];
+        return { state: true, taskData: taskToEdit, index };
     });
 }
 
-export default function EachTaskElement({ currentTask, setTasks }) {
-    const { isEdited, setIfEdited } = useEditTaskContext();
+export default function EachTaskElement({ currentTask }) {
+    const { setTasks } = useTaskContext();
+    const { setIfEdited } = useEditTaskContext();
     const [changed, setChanged] = useState(false);
+    const options = useRef();
     useEffect(() => {
         if (changed) {
-            setTasks(prevValue => {
-                let [tasks, doneTasks] = prevValue;
+            setTasks(({undoneTasks, doneTasks}) => {
                 if (currentTask.isDone) {
-                    tasks.splice(tasks.indexOf(currentTask), 1);
+                    undoneTasks.splice(undoneTasks.indexOf(currentTask), 1);
                     doneTasks.push(currentTask);
                 }
                 else {
                     doneTasks.splice(doneTasks.indexOf(currentTask), 1);
-                    tasks.push(currentTask);
+                    undoneTasks.push(currentTask);
                 }
-                return [[...tasks], [...doneTasks]]
+                return {undoneTasks: [...undoneTasks], doneTasks: [...doneTasks]}
             });
             setChanged(false);
         }
@@ -61,14 +61,14 @@ export default function EachTaskElement({ currentTask, setTasks }) {
         <div
             onMouseOver={
                 evnt => {
-                    if (evnt.currentTarget.querySelector('.options'))
-                        evnt.currentTarget.querySelector('.options').style.visibility = 'visible';
+                    if (options.current)
+                        options.current.style.visibility = 'visible';
                 }
             }
             onMouseLeave={
                 evnt => {
-                    if (evnt.currentTarget.querySelector('.options'))
-                        evnt.currentTarget.querySelector('.options').style.visibility = 'hidden';
+                    if (options.current)
+                        options.current.style.visibility = 'hidden';
                 }
             }
             className="flex justify-between items-center bg-violet-200 hover:bg-violet-400 px-4 py-2 rounded-xl cursor-pointer"
@@ -89,7 +89,7 @@ export default function EachTaskElement({ currentTask, setTasks }) {
                 />
                 <label className={(currentTask.isDone ? "line-through" : "") + ' cursor-pointer'} htmlFor={currentTask.name}>{currentTask.name}</label>
             </div>
-            <div className="options flex gap-2 select-none" style={{ visibility: "hidden" }}>
+            <div ref={options} className="options flex gap-2 select-none" style={{ visibility: "hidden" }}>
                 <div
                     onClick={() => editTask(setIfEdited, currentTask, setTasks)}
                     className="bg-purple-700 hover:bg-blue-600 cursor-pointer text-white p-2 rounded-2xl">

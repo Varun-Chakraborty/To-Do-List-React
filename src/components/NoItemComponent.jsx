@@ -29,18 +29,17 @@ export default function NoItemComponent() {
                 onClick={
                     evnt => {
                         evnt.preventDefault();
-                        setTasks(prevValue => {
-                            let [tasks, doneTasks] = prevValue;
-                            if (tasks.length === 0) {
+                        setTasks(({undoneTasks, doneTasks}) => {
+                            if (undoneTasks.length === 0) {
                                 for (let i = 0; i < 5; i++) {
-                                    tasks.push({ name: generateRandom(), isDone: false });
+                                    undoneTasks.push({ name: generateRandom(), isDone: false });
                                 }
                             } if (doneTasks.length === 0) {
                                 for (let i = 0; i < 5; i++) {
                                     doneTasks.push({ name: generateRandom(), isDone: true });
                                 }
                             }
-                            return [[...tasks], [...doneTasks]]
+                            return { undoneTasks: [...undoneTasks], doneTasks: [...doneTasks] };
                         });
                     }}
             >generate random</button>

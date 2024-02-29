@@ -7,19 +7,21 @@ import { EditTaskStateContextProvider } from "./context/editTaskStateContext";
 
 
 export default function App() {
-    const [[undoneTasks, doneTasks], setTasks] = useState([[], []]);
+    const [{ undoneTasks, doneTasks }, setTasks] = useState({ undoneTasks: [], doneTasks: [] });
     const [showDone, setShowDone] = useState(false);
     const [loading, setIfLoading] = useState(true);
-    const [isEdited, setIfEdited] = useState([false, { name: '', isDone: false }]);
+    const [isEdited, setIfEdited] = useState({ state: false, taskData: { name: '', isDone: false }, index: -1 });
 
     useEffect(() => {
         setTasks(
-            [
-                localStorage.getItem('tasks') ?
-                    JSON.parse(localStorage.getItem('tasks')) : [],
-                localStorage.getItem('doneTasks') ?
-                    JSON.parse(localStorage.getItem('doneTasks')) : []
-            ]
+            {
+                undoneTasks:
+                    localStorage.getItem('tasks') ?
+                        JSON.parse(localStorage.getItem('tasks')) : [],
+                doneTasks:
+                    localStorage.getItem('doneTasks') ?
+                        JSON.parse(localStorage.getItem('doneTasks')) : []
+            }
         );
         setIfLoading(false);
     }, []);

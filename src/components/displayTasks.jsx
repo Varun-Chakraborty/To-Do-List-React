@@ -19,19 +19,19 @@ export default function DisplayTasks() {
                             onClick={
                                 evnt => {
                                     evnt.preventDefault();
-                                    setTasks(prevValue => {
-                                        let [tasks, doneTasks] = prevValue
-                                        return [
-                                            [],
-                                            doneTasks.concat(
-                                                undoneTasks.length > 0 ?
-                                                    tasks.map(
-                                                        task => {
-                                                            return { ...task, isDone: true }
-                                                        }) : []
+                                    setTasks(({ undoneTasks, doneTasks }) => {
+                                        return ({
+                                            undoneTasks: [],
+                                            doneTasks:
+                                                doneTasks.concat(
+                                                    undoneTasks.length > 0 ?
+                                                        undoneTasks.map(
+                                                            task => {
+                                                                return { ...task, isDone: true }
+                                                            }) : []
 
-                                            )
-                                        ]
+                                                )
+                                        });
                                     });
                                 }}
                             className={
@@ -50,18 +50,18 @@ export default function DisplayTasks() {
                             onClick={
                                 evnt => {
                                     evnt.preventDefault();
-                                    setTasks(prevValue => {
-                                        let [tasks, doneTasks] = prevValue;
-                                        return [
-                                            tasks.concat(
-                                                doneTasks.length > 0 ? doneTasks.map(
-                                                    task => {
-                                                        return { ...task, isDone: false }
-                                                    }) : []
+                                    setTasks(({ undoneTasks, doneTasks }) => {
+                                        return ({
+                                            undoneTasks:
+                                                undoneTasks.concat(
+                                                    doneTasks.length > 0 ? doneTasks.map(
+                                                        task => {
+                                                            return { ...task, isDone: false }
+                                                        }) : []
 
-                                            ),
-                                            []
-                                        ]
+                                                ),
+                                            doneTasks: []
+                                        });
                                     });
                                 }}
                             className={
@@ -79,9 +79,8 @@ export default function DisplayTasks() {
                             onClick={
                                 evnt => {
                                     evnt.preventDefault();
-                                    setTasks(prevValue => {
-                                        let [tasks, doneTasks] = prevValue;
-                                        return [[], showDone ? [] : doneTasks]
+                                    setTasks(({ doneTasks }) => {
+                                        return { undoneTasks: [], doneTasks: showDone ? [] : doneTasks };
                                     });
                                 }
                             }
@@ -105,7 +104,6 @@ export default function DisplayTasks() {
                                 <EachTaskElement
                                     key={index}
                                     currentTask={task}
-                                    setTasks={setTasks}
                                 />
                             )
                         }) :
