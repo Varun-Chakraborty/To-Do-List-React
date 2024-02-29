@@ -9,6 +9,9 @@ This is a simple ToDo list application built with React.js and Tailwind CSS.
 - Show/hide completed tasks
 - Data persistence using localStorage
 
+## You can try it live
+- link to visit: https://mini-project-todo-list.vercel.app/
+
 ## Installation
 
 1. Clone the repository:
