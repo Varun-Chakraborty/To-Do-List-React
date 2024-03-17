@@ -1,51 +1,51 @@
-import Navbar from "./components/navbar";
-import MainWindow from "./components/mainWindow";
-import { TaskContextProvider } from "./context/tasksContext";
-import { ShowDoneTaskContextProvider } from "./context/showDoneTaskContext";
+import { Navbar, MainWindow } from "./components";
+import { TaskContextProvider, ShowDoneTaskContextProvider } from "./contexts";
 import { useEffect, useState } from "react";
-import { EditTaskStateContextProvider } from "./context/editTaskStateContext";
 
 
 export default function App() {
-    const [{ undoneTasks, doneTasks }, setTasks] = useState({ undoneTasks: [], doneTasks: [] });
+    const [todos, setTodos] = useState([]);
     const [showDone, setShowDone] = useState(false);
     const [loading, setIfLoading] = useState(true);
-    const [isEdited, setIfEdited] = useState({ state: false, taskData: { name: '', isDone: false }, index: -1 });
 
     useEffect(() => {
-        setTasks(
-            {
-                undoneTasks:
-                    localStorage.getItem('tasks') ?
-                        JSON.parse(localStorage.getItem('tasks')) : [],
-                doneTasks:
-                    localStorage.getItem('doneTasks') ?
-                        JSON.parse(localStorage.getItem('doneTasks')) : []
-            }
-        );
-        setIfLoading(false);
+        let todos = JSON.parse(localStorage.getItem('todos'));
+        setTodos(todos ? todos : []);
+        loading && setIfLoading(false);
     }, []);
 
     useEffect(() => {
-        !loading && localStorage.setItem('tasks', JSON.stringify(undoneTasks));
-    }, [undoneTasks]);
+        if (!loading) {
+            localStorage.setItem('todos', JSON.stringify(todos));
+        }
+    }, [todos]);
 
-    useEffect(() => {
-        !loading && localStorage.setItem('doneTasks', JSON.stringify(doneTasks));
-    }, [doneTasks]);
+    function addTask(newTask) {
+        newTask && setTodos(todos => [{ id: Date.now(), name: newTask, isDone: false }, ...todos]);
+    }
+
+    function deleteTask(id) {
+        setTodos(todos => todos.filter(todo => todo.id !== id));
+    }
+
+    function editTask(id, task) {
+        setTodos(todos => todos.map(todo => todo.id === id ? { ...todo, name: task, isDone: false } : todo));
+    }
+
+    function toggleDone(id, isDone) {
+        setTodos(todos => todos.map(todo => todo.id === id ? { ...todo, isDone } : todo));
+    }
 
     return (
-        <EditTaskStateContextProvider value={{ isEdited, setIfEdited }}>
-            <ShowDoneTaskContextProvider value={{ showDone, setShowDone }}>
-                <TaskContextProvider value={{ undoneTasks, doneTasks, setTasks }}>
-                    <div className="bg-violet-100 h-screen w-screen flex justify-center items-center">
-                        <Navbar />
-                        <section className="bg-violet-200 rounded-2xl p-4 flex flex-col justify-between h-5/6">
-                            <MainWindow />
-                        </section>
-                    </div>
-                </TaskContextProvider>
-            </ShowDoneTaskContextProvider>
-        </EditTaskStateContextProvider>
+        <ShowDoneTaskContextProvider value={{ showDone, setShowDone }}>
+            <TaskContextProvider value={{ todos, setTodos, addTask, deleteTask, editTask, toggleDone }}>
+                <div className="bg-violet-100 h-screen w-screen flex justify-center items-center">
+                    <Navbar />
+                    <section className="bg-violet-200 rounded-2xl p-4 flex flex-col justify-between h-5/6">
+                        <MainWindow />
+                    </section>
+                </div>
+            </TaskContextProvider>
+        </ShowDoneTaskContextProvider>
     );
 }

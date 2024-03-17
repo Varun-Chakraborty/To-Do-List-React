@@ -1,7 +1,6 @@
 import { TiTick } from "react-icons/ti";
-import NewTask from "./newTask";
-import DisplayTasks from "./displayTasks";
-import { useShowDoneTaskContext } from "../context/showDoneTaskContext";
+import { NewTask, DisplayTasks } from "./";
+import { useShowDoneTaskContext } from "../contexts/showDoneTaskContext";
 
 export default function MainWindow() {
     const { showDone, setShowDone } = useShowDoneTaskContext();
@@ -16,7 +15,7 @@ export default function MainWindow() {
                     onClick={
                         evnt => {
                             evnt.preventDefault();
-                            setShowDone(previousState => !previousState)
+                            setShowDone(previousState => !previousState);
                         }
                     }
                     type="submit">
