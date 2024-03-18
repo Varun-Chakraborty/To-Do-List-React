@@ -1,5 +1,6 @@
 # To - Do List App Using React JS
 This is a simple ToDo list application built with React.js and Tailwind CSS.
+This one is the redux implementation of state management instead of useContext used in main branch
 
 ## Features
 - Add new tasks
