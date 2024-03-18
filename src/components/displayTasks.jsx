@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { useShowDoneTaskContext, useTaskContext } from "../contexts";
 import { NoItemComponent, EachTaskElement } from "./";
+import { useDispatch, useSelector } from "react-redux";
+import { actions } from '../redux/todoSlice';
 
 export default function DisplayTasks() {
-    const { showDone } = useShowDoneTaskContext();
-    const { todos, setTodos } = useTaskContext();
     const [todoCount, setTodoCount] = useState(0);
     const [doneTodoCount, setDoneTodoCount] = useState(0);
+    const todos = useSelector(state => state.todos);
+    const showDone = useSelector(state => state.showDone);
+    const { markAllDone, markAllNotDone, deleteAll } = actions;
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setTodoCount(0);
@@ -22,7 +25,7 @@ export default function DisplayTasks() {
 
                     {todoCount > 0 &&
                         <button type="button"
-                            onClick={() => setTodos(todos => todos.map(todo => !todo.isDone ? { ...todo, isDone: true } : todo))}
+                            onClick={() => dispatch(markAllDone())}
                             className={(doneTodoCount > 0 ?
                                 (todoCount > 0 || doneTodoCount > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500") :
                                 (todoCount > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500"))
@@ -31,7 +34,7 @@ export default function DisplayTasks() {
                         </button>}
 
                     {showDone && todoCount === 0 && doneTodoCount > 0 &&
-                        <button type="button" onClick={() => setTodos(todos => todos.map(todo => todo.isDone ? { ...todo, isDone: false } : todo))}
+                        <button type="button" onClick={() => dispatch(markAllNotDone())}
                             className={(doneTodoCount > 0 ?
                                 (todoCount > 0 || doneTodoCount > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500") :
                                 (todoCount > 0 ? "bg-blue-600 hover:bg-blue-500" : "bg-gray-500"))
@@ -40,7 +43,7 @@ export default function DisplayTasks() {
                         </button>}
 
                     <button type="button"
-                        onClick={() => showDone ? setTodos([]) : setTodos(prevTodos => prevTodos.filter(todo => todo.isDone))}
+                        onClick={() => dispatch(deleteAll())}
                         className={(showDone ?
                             (todoCount > 0 || doneTodoCount > 0 ? "bg-red-600 hover:bg-red-500" : "bg-gray-500") :
                             (todoCount > 0 ? "bg-red-600 hover:bg-red-500" : "bg-gray-500"))
@@ -55,8 +58,8 @@ export default function DisplayTasks() {
                     (showDone ? todos :
                         todos.filter(todo => !todo.isDone)).map((task) => {
                             return <EachTaskElement
-                            key={task.id}
-                            currentTask={task} />
+                                key={task.id}
+                                currentTask={task} />
                         }) : <NoItemComponent />}
             </div>
         </div>

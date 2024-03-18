@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { FaEdit, FaSave } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
-import { useTaskContext } from "../contexts/tasksContext";
+import { actions } from '../redux/todoSlice';
+import { useDispatch } from "react-redux";
 
 export default function EachTaskElement({ currentTask }) {
-    const { toggleDone, editTask, deleteTask } = useTaskContext();
     const [edited, setIfEdited] = useState(false);
     const inputField = useRef();
     const options = useRef();
+    const dispatch = useDispatch();
+    const { toggleDone, editTask, deleteTask } = actions;
 
     useEffect(() => {
         edited && inputField.current.focus();
@@ -21,7 +23,7 @@ export default function EachTaskElement({ currentTask }) {
             <div className="flex gap-2 items-center">
                 <input
                     checked={currentTask.isDone}
-                    onChange={evnt => { toggleDone(currentTask.id, evnt.currentTarget.checked) }}
+                    onChange={evnt => { dispatch(toggleDone({id: currentTask.id, isDone: evnt.currentTarget.checked})) }}
                     className='cursor-pointer'
                     type="checkbox"
                 />
@@ -30,13 +32,13 @@ export default function EachTaskElement({ currentTask }) {
                         onKeyDown={evnt => {
                             if (evnt.key === 'Enter') {
                                 setIfEdited(false);
-                                currentTask.name==='' && deleteTask(currentTask.id);
+                                currentTask.name==='' && dispatch(deleteTask(currentTask.id));
                             }
                         }}
                         ref={inputField}
                         className="bg-inherit outline-none border-b border-black"
                         value={currentTask.name}
-                        onChange={evnt => editTask(currentTask.id, evnt.currentTarget.value)}
+                        onChange={evnt => dispatch(editTask({id: currentTask.id, task: evnt.currentTarget.value}))}
                         type="text" /> :
                     <label
                         onDoubleClick={() => setIfEdited(true)}
@@ -50,7 +52,7 @@ export default function EachTaskElement({ currentTask }) {
                         type="button"
                         onClick={() => {
                             setIfEdited(false);
-                            currentTask.name==='' && deleteTask(currentTask.id);
+                            currentTask.name==='' && dispatch(deleteTask(currentTask.id));
                         }}
                         className="bg-purple-700 hover:bg-blue-600 cursor-pointer text-white p-2 rounded-2xl">
                         <FaSave />
@@ -63,7 +65,7 @@ export default function EachTaskElement({ currentTask }) {
                     </button>}
                 <button
                     type="button"
-                    onClick={() => deleteTask(currentTask.id)}
+                    onClick={() => dispatch(deleteTask(currentTask.id))}
                     className="bg-purple-700 hover:bg-red-600 cursor-pointer text-white p-2 rounded-2xl">
                     <MdDeleteForever />
                 </button>

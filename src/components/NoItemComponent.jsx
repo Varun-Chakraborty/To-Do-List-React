@@ -1,4 +1,7 @@
-import { useShowDoneTaskContext, useTaskContext } from "../contexts";
+import { useDispatch, useSelector } from "react-redux";
+import { actions } from '../redux/todoSlice';
+import { nanoid } from "@reduxjs/toolkit";
+
 
 function generateRandom() {
     const charSet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -12,8 +15,9 @@ function generateRandom() {
 }
 
 export default function NoItemComponent() {
-    const { showDone } = useShowDoneTaskContext();
-    const { setTodos } = useTaskContext();
+    const { populateTask } = actions;
+    const dispatch = useDispatch();
+    const showDone = useSelector(state => state.showDone);
     return (
         <div className="flex flex-col lg:flex-row gap-2 lg:justify-between lg:items-center px-4 py-2">
             <div>
@@ -27,9 +31,11 @@ export default function NoItemComponent() {
                     () => {
                         const todos = [];
                         if (todos.length === 0) {
-                            for (let i = 0; i < 10; i++) todos.unshift({ id: 10 - i, name: generateRandom(), isDone: i > 4 ? true : false });
+                            for (let i = 0; i < 10; i++) {
+                                todos.unshift({ id: nanoid(), name: generateRandom(), isDone: i > 4 ? true : false });
+                            }
                         }
-                        setTodos(todos);
+                        dispatch(populateTask(todos));
                     }}
             >generate random</button>
         </div >

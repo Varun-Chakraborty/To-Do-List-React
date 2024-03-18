@@ -1,8 +1,10 @@
 import { useRef, useState } from "react";
-import { useTaskContext } from "../contexts/tasksContext";
+import {actions} from '../redux/todoSlice';
+import { useDispatch } from "react-redux";
 
-export default function NewTask({ }) {
-    const { addTask } = useTaskContext();
+export default function NewTask() {
+    const dispatch = useDispatch();
+    const { addTask } = actions;
     const [task, setTask] = useState('');
     const inputField = useRef();
 
@@ -12,7 +14,7 @@ export default function NewTask({ }) {
             <form
                 onSubmit={evnt => {
                     evnt.preventDefault();
-                    addTask(task);
+                    dispatch(addTask(task));
                     setTask('');
                 }}
                 className="flex flex-col sm:flex-row justify-between w-full gap-3">

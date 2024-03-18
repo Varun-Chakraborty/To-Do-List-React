@@ -1,9 +1,12 @@
 import { TiTick } from "react-icons/ti";
 import { NewTask, DisplayTasks } from "./";
-import { useShowDoneTaskContext } from "../contexts/showDoneTaskContext";
+import { useDispatch, useSelector } from "react-redux";
+import { actions } from '../redux/todoSlice';
 
 export default function MainWindow() {
-    const { showDone, setShowDone } = useShowDoneTaskContext();
+    const showDone = useSelector(state => state.showDone);
+    const dispatch = useDispatch();
+    const { toggleShowDone} = actions;
     return (
         <>
             <div className="flex flex-col gap-3">
@@ -15,7 +18,7 @@ export default function MainWindow() {
                     onClick={
                         evnt => {
                             evnt.preventDefault();
-                            setShowDone(previousState => !previousState);
+                            dispatch(toggleShowDone());
                         }
                     }
                     type="submit">
